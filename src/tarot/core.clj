@@ -107,6 +107,13 @@
 
 (def deal-packet-size 3)
 
+(defn get-list-for-conj
+  "Gets a list viable for conj"
+  [candidate]
+  (if (zero? (count candidate))
+    []
+    candidate))
+
 (defn deal-packet 
   "Deals a packet of cards to the next player"
   [deck result counter players]
@@ -114,9 +121,8 @@
     (nth players counter) 
     (flatten 
       (conj 
-        (if (zero? (count ((nth players counter) result))) 
-          [] 
-          ((nth players counter) result)) 
+        (get-list-for-conj 
+          ((nth players counter) result))
         (take deal-packet-size deck)))))
 
 (def dog-deal-size 1)
@@ -127,9 +133,8 @@
   (assoc result :dog 
     (flatten 
       (conj 
-        (if (zero? (count (:dog result))) 
-          [] 
-          (:dog result)) 
+        (get-list-for-conj
+          (:dog result))
         (take dog-deal-size deck)))))
 
 (defn deal-int 
