@@ -4,6 +4,7 @@
             [tarot.core :refer :all]))
 
 (def deck-size 78)
+(def test-players [:a :b :c :d])
 
 (deftest card-count
   (testing "Number of cards defined"
@@ -25,3 +26,18 @@
   (testing "Shuffled deck cards are the same as defined cards"
     (is (= 0 (count (clojure.set/difference (set tarot.core/cards) (set (tarot.core/shuffle-deck))))))))
 
+(deftest test-deal-all-cards
+  (testing "Right number of unique cards are dealt"
+    (let [result (tarot.core/deal-for-players test-players)]
+      (is (= deck-size (count (distinct (flatten (vals result)))))))))
+
+(deftest test-deals-are-right-size
+  (testing "Each player and the dog gets the right number of cards"
+    (let [result (tarot.core/deal-for-players test-players)]
+      (is
+        (and
+          (= 18 (count (:a result)))
+          (= 18 (count (:b result)))
+          (= 18 (count (:c result)))
+          (= 18 (count (:d result)))
+          (= 6 (count (:dog result))))))))
