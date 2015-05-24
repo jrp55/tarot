@@ -88,14 +88,31 @@
 
 (defn show-shuffled-deck [] (map show-card (shuffle-deck)))
 
+(defn dog-deal? [counter]
+	(and (pos? counter) (zero? (mod counter 2))))
+
+(def deal-packet-size 3)
+
+(defn deal-packet [deck result counter players]
+	(assoc result (nth players counter) (flatten (conj (if (zero? (count ((nth players counter) result))) [] ((nth players counter) result)) (take deal-packet-size deck)))))
+
+(def dog-deal-size 1)
+
+(defn deal-dog [deck result]
+	(assoc result :dog (take dog-deal-size deck)))
+
 (defn deal []
 	(loop [deck (show-shuffled-deck)
 	       result {}
                counter 0
                players [:a :b :c :d]]
-		(if (= (count deck) 6)
-			(assoc result :dog deck)
-			(recur (nthrest deck 3)
-			       (assoc result (nth players counter) (flatten (conj (if (zero? (count ((nth players counter) result))) [] ((nth players counter) result)) (take 3 deck))))
+		(if (zero? (count deck))
+			result
+			(recur (nthrest deck (if (dog-deal? counter) (+ deal-packet-size dog-deal-size) deal-packet-size))
+			       (if (dog-deal? counter) 
+			       	(deal-packet deck result counter players)
+				(->> (result)
+                                     (#(deal-packet deck % counter players))
+				     (#(deal-dog deck %))))
 			       (mod (inc counter) (count players))
 			       players))))
