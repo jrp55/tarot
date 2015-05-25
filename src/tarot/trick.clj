@@ -26,10 +26,29 @@
         (recur (compare-plays winning-play (first to-compare))
                (rest to-compare))))))
 
+(defn excuse-played?
+  [cards-played]
+  (reduce #(or %1 %2) (map #(= :excuse (:card %)) cards-played)))
+
+(defn excuse-player
+  [card-plays]
+  (:player (filter #(= :excuse (:card (:card %))) card-plays)))
+
+(defn non-excuses
+  [cards-played]
+  (filter #(not= :excuse (:card %)) cards-played))
+
+(defn excuses
+  [cards-played]
+  (filter #(= :excuse (:card %)) cards-played))
+
 (defn evaluate-trick
   "Takes an array of maps, the array being in order of play, and returns a map of the players to the list of cards they won"
   [card-plays]
   (let [winning-play (deduce-winner card-plays)
         winning-player (:player winning-play)
-        cards-played (reduce conj [] (map :card card-plays))]
-    {:winner winning-player :trick cards-played}))
+        cards-played (reduce conj [] (map :card card-plays))
+        return-map {:winner winning-player}]
+    (if (excuse-played? cards-played)
+      (assoc (assoc return-map :trick (non-excuses cards-played)) (excuse-player card-plays) (excuses cards-played))
+      (assoc return-map :trick cards-played))))
