@@ -1,14 +1,14 @@
 # tarot
 
-A Clojure library designed to ... well, that part is up to you.
+A Clojure library designed to implement French Tarot
 
 ## Usage
 
-FIXME
+???
 
 ## License
 
-Copyright © 2015 FIXME
+Copyright © 2015 James Poole
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
